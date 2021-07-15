@@ -117,10 +117,11 @@ search_slow time: 1.73868e-04
 - Exception - ValueError
 - nbdime (https://nbdime.readthedocs.io/)
 
-</div>
-</details>
-
-
+    
 ### 추가 공부하면 좋을 내용
 - GIL (Global interpreter Lock)
   - Python은 왜 GIL 정책을 적용했을까?
+  - https://www.artima.com/weblogs/viewpost.jsp?thread=214235
+
+</div>
+</details>
