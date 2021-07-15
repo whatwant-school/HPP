@@ -144,3 +144,6 @@ search_slow time: 1.73868e-04
 ### functools.wraps
 - https://velog.io/@doondoony/python-functools-wraps
 
+
+### 여러가지 Visualize tools
+- https://stackoverflow.com/questions/4544784/how-can-you-get-the-call-tree-with-python-profilers
