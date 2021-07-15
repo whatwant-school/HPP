@@ -125,3 +125,22 @@ search_slow time: 1.73868e-04
 
 </div>
 </details>
+
+
+---
+## CHAPTER 02 - 
+
+<details>
+<summary>접기/펼치기 버튼</summary>
+<div markdown="1"><BR />
+
+</div>
+</details>
+
+### magic function
+- https://ipython.readthedocs.io/en/stable/interactive/magics.html
+
+
+### functools.wraps
+- https://velog.io/@doondoony/python-functools-wraps
+
