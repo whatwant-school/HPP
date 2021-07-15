@@ -119,3 +119,8 @@ search_slow time: 1.73868e-04
 
 </div>
 </details>
+
+
+### 추가 공부하면 좋을 내용
+- GIL (Global interpreter Lock)
+  - Python은 왜 GIL 정책을 적용했을까?
