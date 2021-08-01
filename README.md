@@ -134,9 +134,6 @@ search_slow time: 1.73868e-04
 <summary>접기/펼치기 버튼</summary>
 <div markdown="1"><BR />
 
-</div>
-</details>
-
 ### magic function
 - https://ipython.readthedocs.io/en/stable/interactive/magics.html
 
@@ -147,3 +144,54 @@ search_slow time: 1.73868e-04
 
 ### 여러가지 Visualize tools
 - https://stackoverflow.com/questions/4544784/how-can-you-get-the-call-tree-with-python-profilers
+
+</div>
+</details>
+
+
+---
+## CHAPTER 03 - 
+
+<details>
+<summary>접기/펼치기 버튼</summary>
+<div markdown="1"><BR />
+
+### bisect
+- https://velog.io/@gojaegaebal/201223-개발일지16일차-파이썬에서-bisect-함수-활용-feat.백준-8983번
+
+
+### Python dictionary implementation
+- https://uiandwe.tistory.com/1262
+
+
+### The working principle of functions and generators in python
+- https://www.fatalerrors.org/a/the-working-principle-of-functions-and-generators-in-python.html
+
+</div>
+</details>
+
+
+---
+## CHAPTER 04 - 
+
+<details>
+<summary>접기/펼치기 버튼</summary>
+<div markdown="1"><BR />
+
+### What's the future of the pandas library?
+- https://www.dataschool.io/future-of-pandas/
+
+
+### map vs. apply
+- 일반적으로 map은 python native(그러니까, 판다스가 아닌 그냥 python)에서 functional programming의 원형을 수행하는 역할을 제공합니다.
+- python의 iterable 객체(그러니가 list와 같이 여러개의 값을 순차적으로 접근하는 객체)에 map()내에 기술된 함수를 적용하면 해당 함수를 iterable 객체의 개별 값을 입력해주면서 반환값을 다시 iterable 객체로 저장할 수 있게 해줍니다(요약하자면 반복적으로 함수를 호출할 시에 for loop를 쓸 필요가 없게 해줍니다).
+- apply도 map과 유사한 역할을 합니다. 단 apply는 pandas에서 사용되며 python native에서는 사용하지 않습니다(즉 DataFrame/Series에만 적용되고 list에는 적용되지 않습니다).
+- 그리고 pandas도 map이 있지만 apply가 워낙 강력해서 잘 사용하지 않습니다.
+
+
+### pandas on Spark
+- https://koalas.readthedocs.io/en/latest/
+
+
+</div>
+</details>
