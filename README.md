@@ -1,6 +1,8 @@
 # HPP
 High Performance Python - 2nd
 
+- https://github.com/mynameisfiber/high_performance_python_2e
+
 ---
 ## CHAPTER 01 - 고성능 파이썬 이해하기
 
