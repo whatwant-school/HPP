@@ -115,16 +115,14 @@ def calculate_z_serial_purepython(maxiter, zs, cs):
 - `cythonfn.pyx` 파일 생성
 
 ```python
-def calculate_z(int maxiter, zs, cs):
+def calculate_z(maxiter, zs, cs):
     """Calculate output list using Julia update rule"""
-    cdef unsigned int i, n
-    cdef double complex z, c
     output = [0] * len(zs)
     for i in range(len(zs)):
         n = 0
         z = zs[i]
         c = cs[i]
-        while n < maxiter and (z.real * z.real + z.imag * z.imag) < 4:
+        while n < maxiter and abs(z) < 2:
             z = z * z + c
             n += 1
         output[i] = n
@@ -211,6 +209,138 @@ $ python setup.py build_ext --inplace
 
 
 ### execute
-- 엄청난 속도 개선을 확인해볼 수 있다
+- 속도 개선을 확인해볼 수 있다
 
 ![7-6-2](img/7-6-2.png)
+
+
+---
+## pyximport
+- `setup.py` 없이, `pyximport` 코드 삽입만 해도 compile 알아서 수행
+- 앞에서 만들어진 so 파일을 삭제하고 진행해야 한다.
+
+![7-7-1](img/7-7-1.png)
+
+
+### export HTML
+- 결과를 HTML 파일로 만들어내는 어노테이션 옵션 존재
+  - 아래 예제는 python 코드 그대로 상태인 pyx 파일이다.
+
+```bash
+$ cython -a cythonfn.pyx
+```
+
+![7-7-2](img/7-7-2.png)
+
+- HTML 파일을 브라우저로 보면 다음과 같이 나온다.
+
+![7-7-3](img/7-7-3.png)
+
+- 각 line을 클릭하면 다음과 같이 자세히 보인다.
+- 짙은 노란색은 `Python 가상머신에서 더 많은 호출`이 있음을 표현
+
+![7-7-4](img/7-7-4.png)
+
+- 우리의 목표는 짙은 노란색을 옅게 만드는 것 !!!
+
+
+### CPU 시간 소요 원인
+- 쉴 틈 없이 바쁘게 동작하는 내부 루프
+- list, array, np.array 항목에 대한 역참조
+- 수학 계산
+
+
+### 타입 어노테이션 - `cdef`
+- `int` 부호가 있는 정수형
+- `unsigned int` 양수만 저장할 수 있는 정수형
+- `double complex` 배정밀도(double-precision) 복소수
+
+```python
+def calculate_z(int maxiter, zs, cs):
+    """Calculate output list using Julia update rule"""
+    cdef unsigned int i, n
+    cdef double complex z, c
+    output = [0] * len(zs)
+    for i in range(len(zs)):
+        n = 0
+        z = zs[i]
+        c = cs[i]
+        while n < maxiter and abs(z) < 2:
+            z = z * z + c
+            n += 1
+        output[i] = n
+    return output
+```
+
+- 다시 HTML 생성하고,
+
+![7-7-5](img/7-7-5.png)
+
+- 결과를 확인해보면 다음과 같다.
+  - 11/12 line을 보면 아예 흰색이다 → Python 가상머신에서 동작하지 않음
+  - 03/04/11/12 line - C 컴파일러에서 이 변수들을 담은 바이트를 최적화된 방법으로 처리
+
+![7-7-6](img/7-7-6.png)
+
+- 엄청난 실행 속도 개선을 볼 수 있다.
+
+![7-7-7](img/7-7-7.png)
+
+
+### 강도 저감(strength reduction)
+- 같은 일을 하지만 좀 더 특화된 코드로 같은 문제를 해결하는 방법
+
+
+### abs() 개선
+- abs() 함수를 없앴다.
+
+```python
+def calculate_z(int maxiter, zs, cs):
+    """Calculate output list using Julia update rule"""
+    cdef unsigned int i, n
+    cdef double complex z, c
+    output = [0] * len(zs)
+    for i in range(len(zs)):
+        n = 0
+        z = zs[i]
+        c = cs[i]
+        while n < maxiter and (z.real * z.real + z.imag * z.imag) < 4:
+            z = z * z + c
+            n += 1
+        output[i] = n
+    return output
+```
+
+- HTML으로 변환 후 확인해보면 다음과 같다.
+
+![7-7-8](img/7-7-8.png)
+
+- 실행 속도를 보면 엄청난 차이가 보인다.
+
+![7-7-9](img/7-7-9.png)
+
+
+### 경계 검사
+- 경계 검사: 프로그램이 할당된 배열 밖의 데이터에 접근하지 않도록 막아주기
+- Cython: list의 범위를 벗어나는 주소에 접근하는 실수를 막아줌 → CPU 시간을 약간 소비하지만 미미
+
+```python
+#cython: boundscheck-False
+def calculate_z(int maxiter, zs, cs):
+    """Calculate output list using Julia update rule"""
+    cdef unsigned int i, n
+```
+
+- 플래그 예제로 위와 같이 작성해봤지만, 성능 개선에는 별 도움이 되지 않음
+
+
+---
+## Cython and Numpy
+
+### list vs. array
+- list: 가리키는 객체가 메모리의 어디든 존재 → 역참조에 따른 부가비용 필요
+- array: 연속적인 RAM 블록에 저장 → 빠른 주소 계산
+  - Python array: 정수/부동소수점 수/문자/유니코드 문자열 등의 기본 타입의 1차원 저장소 제공
+  - numpy.array: 다차원 배열 및 복소수와 같은 다양한 기본 타입 지원
+
+### 
